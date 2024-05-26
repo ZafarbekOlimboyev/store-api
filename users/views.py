@@ -2,6 +2,7 @@ import datetime
 import random
 
 from django.core.mail import send_mail
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import UpdateAPIView
@@ -22,6 +23,7 @@ class RegisterView(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
 
+    @swagger_auto_schema(tags=['Register'])
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -37,6 +39,7 @@ class RegisterView(ModelViewSet):
         return Response(res, status=status.HTTP_201_CREATED, headers=headers)
 
 
+@swagger_auto_schema(tags=['Password Reset'], methods=['get', 'post'])
 @api_view(["GET", "POST"])
 def reset_password(request):
     if request.method == 'GET':
@@ -110,6 +113,7 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsSuperUserOrAdminUser, ]
 
+    @swagger_auto_schema(tags=['Users'])
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset().filter(is_superuser=False))
 
@@ -121,6 +125,22 @@ class UserViewSet(ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(tags=['Users'])
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(self, request, *args, **kwargs)
+
+    @swagger_auto_schema(tags=['Users'])
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(tags=['Users'])
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(tags=['Users'])
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
 
 class ChangePasswordView(UpdateAPIView):
     serializer_class = ChangePasswordSerializer
@@ -130,6 +150,7 @@ class ChangePasswordView(UpdateAPIView):
         obj = self.request.user
         return obj
 
+    @swagger_auto_schema(tags=['Password Update'])
     def update(self, request, *args, **kwargs):
         try:
             self.object = self.get_object()
@@ -154,6 +175,7 @@ class ChangePasswordView(UpdateAPIView):
             return Response(data={'Error': 'Token has not found.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(tags=['Update admin'], method='patch')
 @api_view(['PATCH'])
 def update_user(request, pk):
     try:

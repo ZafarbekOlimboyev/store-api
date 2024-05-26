@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework_simplejwt',
     'ckeditor',
+    'django_filters',
     # My apps
     'users',
     'app_products'
