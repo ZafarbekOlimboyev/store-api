@@ -5,11 +5,12 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 
-from config.permissions import Cheak, IsAdminOrReadOnly
-from .models import CategoriesModel, ProductsModel
+from config.permissions import Cheak, IsAdminOrReadOnly, IsSuperUserOrAdminUser
+from .models import CategoriesModel, ProductsModel, ProImageModel
 from .paginations import StandardResultsSetPagination
-from .serializers import ProductsSerializer, CategoriesSerializer
+from .serializers import ProductsSerializer, CategoriesSerializer, UpdateImgSerializer
 
 
 class CategoryViewSet(ModelViewSet):
@@ -130,3 +131,44 @@ def update_product_view(request, pk):
         return Response(data={"msg": f"Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class ImageView(APIView):
+    http_method_names = ['post', 'put']
+
+    def put(self, request, *args, **kwargs):
+        product_id = self.kwargs.get('product_id')
+        images = request.FILES.getlist('images')
+
+        if not product_id or not images:
+            return Response({'error': 'product_id and images are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not ProductsModel.objects.filter(id=product_id).exists():
+            return Response({'error': f"Product with id {product_id} does not exist"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            ProImageModel.objects.filter(product_id=product_id).delete()
+            new_images = [ProImageModel(image=image, product_id=product_id) for image in images]
+        except:
+            raise ValueError(f"Product with id {product_id} does not exist")
+
+        try:
+            ProImageModel.objects.bulk_create(new_images)
+
+            return Response({'message': 'New images added successfully'}, status=status.HTTP_200_OK)
+        except:
+            return Response(data={'message': 'International Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def post(self, request, *args, **kwargs):
+        product_id = self.kwargs.get('product_id')
+        images = request.FILES.getlist('images')
+
+        if not product_id or not images:
+            return Response({'error': 'product_id and images are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            new_images = [ProImageModel(image=image, product_id=product_id) for image in images]
+            ProImageModel.objects.bulk_create(new_images)
+
+            return Response({'message': 'Images updated successfully'}, status=status.HTTP_200_OK)
+        except:
+            return Response(data={'message': 'International Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

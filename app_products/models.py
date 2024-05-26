@@ -17,7 +17,6 @@ class ProductsModel(models.Model):
     price = models.FloatField()
     units = models.CharField(max_length=255)
     description = models.CharField(max_length=765)
-    urls = models.JSONField(default=list, blank=True)
     info = models.JSONField(default=list, blank=True)
     category_id = models.ForeignKey(CategoriesModel, on_delete=models.CASCADE)
     available = models.BooleanField(default=True)

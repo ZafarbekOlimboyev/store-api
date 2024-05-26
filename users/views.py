@@ -2,7 +2,6 @@ import datetime
 import random
 
 from django.core.mail import send_mail
-from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.generics import UpdateAPIView
@@ -10,7 +9,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from config.permissions import Cheak, IsSuperUserOrAdminUser
+from config.permissions import IsSuperUserOrAdminUser
 from .models import PasswordResetModel
 from .serializers import UserCreateSerializer, ChangePasswordSerializer, UserSerializer
 
@@ -51,13 +50,13 @@ def reset_password(request):
                 subject="Reset Password",
                 message=f"Your confirm code {num1}-{num2}",
                 from_email="forlesson02@gmail.com",
-                recipient_list=[request.user.email],
+                recipient_list=[user.email],
                 fail_silently=False,
             )
             return Response(data={"status": "success", "code": status.HTTP_200_OK,
                                   "message": "Code sent successfully."
                                              "The code is valid for 10 minutes",
-                                  "email": request.user.email})
+                                  "email": user.email})
         else:
             return Response(data={"status": "filed", "code": status.HTTP_404_NOT_FOUND,
                                   "message": "Username not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -172,3 +171,8 @@ def update_user(request, pk):
             return Response(data={"msg": "You don't have permission"}, status=status.HTTP_400_BAD_REQUEST)
     except:
         return Response(data={"msg": "International server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["GET"])
+def error_404(request, pk=None):
+    return Response(data={'message': "Page not found"}, status=status.HTTP_404_NOT_FOUND)

@@ -3,14 +3,15 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 
 
 class CustomUser(AbstractUser):
     USERNAME_FIELD = 'username'
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    phones = models.JSONField(default=list)
+    phone_num1 = models.CharField(max_length=25, default='+998941633015')
+    phone_num2 = models.CharField(max_length=25, null=True)
+    email = models.EmailField(default='zafarbekolimboyev07@gamil.com')
     createdAt = models.DateTimeField(default=datetime.datetime.now())
     updatedAt = models.DateTimeField(null=True)
 

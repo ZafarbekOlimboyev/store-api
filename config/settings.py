@@ -129,9 +129,9 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-if DEBUG:
-    STATICFILES_DIRS = [BASE_DIR / 'static', BASE_DIR / 'media']
-
+# if DEBUG:
+#     STATICFILES_DIRS = [BASE_DIR / 'static', BASE_DIR / 'media']
+# else:
 STATIC_ROOT = BASE_DIR / 'static'
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -195,8 +195,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = "forlesson02@gmail.com"
+EMAIL_HOST_PASSWORD = "myav mead jxls zsuq"
 
 CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
 CKEDITOR_UPLOAD_PATH = "uploads/"

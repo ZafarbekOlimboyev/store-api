@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, ListField, FileField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ListField, FileField, Serializer
 
 from .models import ProductsModel, CategoriesModel, ProImageModel
 
@@ -27,19 +27,21 @@ class ProductsSerializer(ModelSerializer):
         child=FileField(allow_empty_file=False, use_url=False),
         write_only=True
     )
+    category = SerializerMethodField(method_name='get_category', read_only=True)
 
     class Meta:
         model = ProductsModel
         fields = [
             'id', 'title', 'price', 'units',
-            'description', 'category_id', 'urls',
+            'description', 'category_id', 'category',
             'info', 'uploaded_images', 'images',
             'available', 'createdAt', 'updateAt',
         ]
         extra_kwargs = {
             'available': {'read_only': True},
             'createdAt': {'read_only': True},
-            'updateAt': {'read_only': True}
+            'updateAt': {'read_only': True},
+            'category_id': {'write_only': True}
         }
 
     def create(self, validated_data):
@@ -49,3 +51,13 @@ class ProductsSerializer(ModelSerializer):
             ProImageModel.objects.create(product=product, image=image)
 
         return product
+
+    def get_category(self, obj):
+        return obj.category_id.category
+
+
+class UpdateImgSerializer(Serializer):
+    uploaded_images = ListField(
+        child=FileField(allow_empty_file=False, use_url=False),
+        write_only=True
+    )

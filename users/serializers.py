@@ -12,8 +12,8 @@ class UserCreateSerializer(ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = (
-            'username', 'password', 'first_name',
-            'last_name', 'phones'
+            'username', 'password', 'email', 'first_name',
+            'last_name', 'phone_num1', 'phone_num2'
         )
 
 
@@ -27,8 +27,8 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = (
-            'username', 'first_name',
-            'last_name', 'phones',
+            'username', 'email', 'first_name',
+            'last_name', 'phone_num1', 'phone_num2',
             'createdAt', 'updatedAt'
         )
         extra_kwargs = {
